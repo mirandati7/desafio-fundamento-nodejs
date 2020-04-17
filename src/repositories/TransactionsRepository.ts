@@ -6,23 +6,40 @@ interface Balance {
   total: number;
 }
 
+interface CreateTransactionDTO {
+  title: string;
+  value: number;
+  type: string;
+}
+
 class TransactionsRepository {
   private transactions: Transaction[];
+
+  private balance: Balance;
 
   constructor() {
     this.transactions = [];
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    // Pensar no retorno
+    return this.balance;
   }
 
-  public create(): Transaction {
-    // TODO
+  public create({ title, value, type }: CreateTransactionDTO): Transaction {
+    const transaction = new Transaction({
+      title,
+      value,
+      type: 'income | outcome',
+    });
+
+    this.transactions.push(transaction);
+
+    return transaction;
   }
 }
 
