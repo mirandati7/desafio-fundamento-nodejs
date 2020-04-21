@@ -23,7 +23,10 @@ class TransactionsRepository {
     return this.transactions;
   }
 
-  public getBalance(): Balance {
+  /** *
+   * Return transactions Income
+   */
+  public getTransactionsIncome(): number {
     const incomesTransactions = this.transactions
       .filter(transaction => transaction.type === 'income')
       .reduce(
@@ -38,6 +41,13 @@ class TransactionsRepository {
         },
       );
 
+    return incomesTransactions.income;
+  }
+
+  /** *
+   * Return transactions Outcome
+   */
+  public getTransactionsOutcome(): number {
     const outcomesTransactions = this.transactions
       .filter(transaction => transaction.type === 'outcome')
       .reduce(
@@ -52,10 +62,14 @@ class TransactionsRepository {
         },
       );
 
-    const { income } = incomesTransactions;
-    const { outcome } = outcomesTransactions;
+    return outcomesTransactions.outcome;
+  }
 
-    const total = income - outcome;
+  public getBalance(): Balance {
+    const income = this.getTransactionsIncome();
+    const outcome = this.getTransactionsOutcome();
+
+    const total = this.getTransactionsIncome() - this.getTransactionsOutcome();
     const balance = {
       income,
       outcome,
