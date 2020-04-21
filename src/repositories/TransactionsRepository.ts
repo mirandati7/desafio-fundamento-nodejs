@@ -9,13 +9,11 @@ interface Balance {
 interface CreateTransactionDTO {
   title: string;
   value: number;
-  type: string;
+  type: 'income' | 'outcome';
 }
 
 class TransactionsRepository {
   private transactions: Transaction[];
-
-  private balance: Balance;
 
   constructor() {
     this.transactions = [];
@@ -26,15 +24,51 @@ class TransactionsRepository {
   }
 
   public getBalance(): Balance {
-    // Pensar no retorno
-    return this.balance;
+    const incomesTransactions = this.transactions
+      .filter(transaction => transaction.type === 'income')
+      .reduce(
+        (accumulator: Balance, transaction: Transaction) => {
+          accumulator.income += transaction.value;
+          return accumulator;
+        },
+        {
+          income: 0,
+          outcome: 0,
+          total: 0,
+        },
+      );
+
+    const outcomesTransactions = this.transactions
+      .filter(transaction => transaction.type === 'outcome')
+      .reduce(
+        (accumulator: Balance, transaction: Transaction) => {
+          accumulator.outcome += transaction.value;
+          return accumulator;
+        },
+        {
+          income: 0,
+          outcome: 0,
+          total: 0,
+        },
+      );
+
+    const { income } = incomesTransactions;
+    const { outcome } = outcomesTransactions;
+
+    const total = income - outcome;
+    const balance = {
+      income,
+      outcome,
+      total,
+    };
+    return balance;
   }
 
   public create({ title, value, type }: CreateTransactionDTO): Transaction {
     const transaction = new Transaction({
       title,
       value,
-      type: 'income | outcome',
+      type,
     });
 
     this.transactions.push(transaction);
